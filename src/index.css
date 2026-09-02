@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: 'Noto Kufi Arabic', 'Tajawal', 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #F9F7F2;
+    color: #2D241E;
+  }
+}
+
+/* High Density Custom Subtle Gold Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1EFE9;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a9833e;
+}
+
+/* Profile card hover & border dynamics */
+.profile-card {
+  transition: all 0.25s ease-in-out;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+}
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(45, 36, 30, 0.09);
+  border-color: #C5A059;
+}
+
+/* Shimmer animation for images loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.img-placeholder {
+  background: linear-gradient(90deg, #F1EFE9 25%, #E5E0D5 50%, #F1EFE9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+

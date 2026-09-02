@@ -1,0 +1,6 @@
+{
+  "name": "زواج وتعارف السعودية",
+  "description": "منصة راقية لعرض الملفات التعريفية للتعارف والزواج في المملكة العربية السعودية مع إمكانية التواصل السريع",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
