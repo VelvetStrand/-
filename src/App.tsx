@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { PROFILES_DATA } from './data/profiles';
-import { Profile } from './types';
+import { Profile, SortOption } from './types';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
 import { ProfileCard } from './components/ProfileCard';
@@ -14,6 +14,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('الكل');
   const [selectedCity, setSelectedCity] = useState('الكل');
+  const [sortBy, setSortBy] = useState<SortOption>('default');
   const [visibleCount, setVisibleCount] = useState(16);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
@@ -37,19 +38,39 @@ export default function App() {
     });
   }, [searchQuery, selectedStatus, selectedCity]);
 
+  // Sort filtered profiles based on selected sorting option
+  const sortedProfiles = useMemo(() => {
+    const list = [...filteredProfiles];
+    switch (sortBy) {
+      case 'newest':
+        // Higher ID corresponds to newer entries
+        return list.sort((a, b) => b.id - a.id);
+      case 'age-asc':
+        // Youngest to oldest
+        return list.sort((a, b) => a.age - b.age);
+      case 'age-desc':
+        // Oldest to youngest
+        return list.sort((a, b) => b.age - a.age);
+      case 'default':
+      default:
+        return list.sort((a, b) => a.id - b.id);
+    }
+  }, [filteredProfiles, sortBy]);
+
   // Sliced profiles for progressive loading
   const displayedProfiles = useMemo(() => {
-    return filteredProfiles.slice(0, visibleCount);
-  }, [filteredProfiles, visibleCount]);
+    return sortedProfiles.slice(0, visibleCount);
+  }, [sortedProfiles, visibleCount]);
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 12, filteredProfiles.length));
+    setVisibleCount((prev) => Math.min(prev + 12, sortedProfiles.length));
   };
 
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedStatus('الكل');
     setSelectedCity('الكل');
+    setSortBy('default');
     setVisibleCount(16);
   };
 
@@ -78,8 +99,13 @@ export default function App() {
             setSelectedCity(c);
             setVisibleCount(16);
           }}
+          sortBy={sortBy}
+          setSortBy={(s) => {
+            setSortBy(s);
+            setVisibleCount(16);
+          }}
           totalCount={PROFILES_DATA.length}
-          filteredCount={filteredProfiles.length}
+          filteredCount={sortedProfiles.length}
           onReset={handleResetFilters}
         />
 
@@ -97,13 +123,13 @@ export default function App() {
             </div>
 
             {/* Load More Button */}
-            {visibleCount < filteredProfiles.length && (
+            {visibleCount < sortedProfiles.length && (
               <div className="mt-10 text-center">
                 <button
                   onClick={handleLoadMore}
                   className="inline-flex items-center gap-2 bg-white border-2 border-[#1A4D2E] text-[#1A4D2E] hover:bg-[#1A4D2E] hover:text-white active:scale-95 font-bold px-8 py-3 rounded-full shadow-xs transition-colors cursor-pointer text-sm sm:text-base"
                 >
-                  <span>عرض المزيد من الملفات ({filteredProfiles.length - visibleCount} متبقية)</span>
+                  <span>عرض المزيد من الملفات ({sortedProfiles.length - visibleCount} متبقية)</span>
                   <ChevronDown className="w-4 h-4" />
                 </button>
               </div>

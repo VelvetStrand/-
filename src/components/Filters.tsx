@@ -1,6 +1,6 @@
 import React from 'react';
-import { Search, MapPin, UserCheck, X, SlidersHorizontal } from 'lucide-react';
-import { SocialStatus } from '../types';
+import { Search, MapPin, X, ArrowUpDown } from 'lucide-react';
+import { SocialStatus, SortOption } from '../types';
 
 interface FiltersProps {
   searchQuery: string;
@@ -9,6 +9,8 @@ interface FiltersProps {
   setSelectedStatus: (status: string) => void;
   selectedCity: string;
   setSelectedCity: (city: string) => void;
+  sortBy: SortOption;
+  setSortBy: (sort: SortOption) => void;
   totalCount: number;
   filteredCount: number;
   onReset: () => void;
@@ -40,6 +42,13 @@ const STATUSES: { label: string; value: string }[] = [
   { label: "أرملة", value: "أرملة" },
 ];
 
+const SORT_OPTIONS: { label: string; value: SortOption }[] = [
+  { label: "✨ الترتيب الافتراضي", value: "default" },
+  { label: "🕒 الأحدث إضافة", value: "newest" },
+  { label: "👶 العمر: من الأصغر للأكبر", value: "age-asc" },
+  { label: "🧕 العمر: من الأكبر للأصغر", value: "age-desc" },
+];
+
 export const Filters: React.FC<FiltersProps> = ({
   searchQuery,
   setSearchQuery,
@@ -47,15 +56,17 @@ export const Filters: React.FC<FiltersProps> = ({
   setSelectedStatus,
   selectedCity,
   setSelectedCity,
+  sortBy,
+  setSortBy,
   totalCount,
   filteredCount,
   onReset
 }) => {
-  const isFiltered = searchQuery !== '' || selectedStatus !== 'الكل' || selectedCity !== 'الكل';
+  const isFiltered = searchQuery !== '' || selectedStatus !== 'الكل' || selectedCity !== 'الكل' || sortBy !== 'default';
 
   return (
     <div className="bg-[#F1EFE9] border border-[#C5A059]/25 rounded-2xl p-4 sm:p-5 shadow-xs mb-6 max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between">
+      <div className="flex flex-col lg:flex-row gap-3 lg:items-center justify-between">
         
         {/* Search Bar */}
         <div className="relative flex-1">
@@ -77,18 +88,35 @@ export const Filters: React.FC<FiltersProps> = ({
           )}
         </div>
 
-        {/* City Filter Dropdown */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 sm:w-52">
-            <MapPin className="w-4 h-4 text-[#1A4D2E] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        {/* City & Sort Dropdowns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:w-auto">
+          {/* City Filter Dropdown */}
+          <div className="relative sm:w-48">
+            <MapPin className="w-4 h-4 text-[#1A4D2E] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full bg-white border border-[#C5A059]/30 rounded-full pr-9 pl-3 py-2.5 text-sm text-[#2D241E] font-medium focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20 focus:border-[#1A4D2E] transition-all appearance-none cursor-pointer"
+              className="w-full bg-white border border-[#C5A059]/30 rounded-full pr-9 pl-3 py-2.5 text-xs sm:text-sm text-[#2D241E] font-medium focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20 focus:border-[#1A4D2E] transition-all appearance-none cursor-pointer"
             >
               {CITIES.map((city) => (
                 <option key={city} value={city} className="bg-white text-[#2D241E]">
                   {city === "الكل" ? "📍 جميع المدن" : `📍 ${city}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="relative sm:w-56">
+            <ArrowUpDown className="w-4 h-4 text-[#1A4D2E] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="w-full bg-white border border-[#C5A059]/30 rounded-full pr-9 pl-3 py-2.5 text-xs sm:text-sm text-[#2D241E] font-medium focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20 focus:border-[#1A4D2E] transition-all appearance-none cursor-pointer"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value} className="bg-white text-[#2D241E]">
+                  {opt.label}
                 </option>
               ))}
             </select>

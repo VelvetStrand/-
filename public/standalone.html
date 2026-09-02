@@ -95,7 +95,7 @@
     
     <!-- Filter Box -->
     <div class="bg-[#F1EFE9] border border-[#C5A059]/25 rounded-2xl p-4 mb-6 shadow-xs">
-      <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div class="flex flex-col lg:flex-row gap-3 items-center justify-between">
         <div class="relative w-full flex-1">
           <input
             id="searchInput"
@@ -104,28 +104,41 @@
             class="w-full bg-white border border-[#C5A059]/30 rounded-full px-5 py-2.5 text-sm text-[#2D241E] placeholder-[#A19B91] focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20"
           />
         </div>
-        <div class="w-full sm:w-52">
-          <select
-            id="cityFilter"
-            class="w-full bg-white border border-[#C5A059]/30 rounded-full px-4 py-2.5 text-sm text-[#2D241E] font-medium focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20 cursor-pointer"
-          >
-            <option value="الكل">📍 جميع المدن</option>
-            <option value="الرياض">📍 الرياض</option>
-            <option value="جدة">📍 جدة</option>
-            <option value="الدمام">📍 الدمام</option>
-            <option value="مكة المكرمة">📍 مكة المكرمة</option>
-            <option value="المدينة المنورة">📍 المدينة المنورة</option>
-            <option value="الخبر">📍 الخبر</option>
-            <option value="الطائف">📍 الطائف</option>
-            <option value="تبوك">📍 تبوك</option>
-            <option value="أبها">📍 أبها</option>
-            <option value="القصيم">📍 القصيم</option>
-            <option value="حائل">📍 حائل</option>
-            <option value="جازان">📍 جازان</option>
-            <option value="الأحساء">📍 الأحساء</option>
-            <option value="الجبيل">📍 الجبيل</option>
-            <option value="ينبع">📍 ينبع</option>
-          </select>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full lg:w-auto">
+          <div class="w-full sm:w-48">
+            <select
+              id="cityFilter"
+              class="w-full bg-white border border-[#C5A059]/30 rounded-full px-4 py-2.5 text-xs sm:text-sm text-[#2D241E] font-medium focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20 cursor-pointer"
+            >
+              <option value="الكل">📍 جميع المدن</option>
+              <option value="الرياض">📍 الرياض</option>
+              <option value="جدة">📍 جدة</option>
+              <option value="الدمام">📍 الدمام</option>
+              <option value="مكة المكرمة">📍 مكة المكرمة</option>
+              <option value="المدينة المنورة">📍 المدينة المنورة</option>
+              <option value="الخبر">📍 الخبر</option>
+              <option value="الطائف">📍 الطائف</option>
+              <option value="تبوك">📍 تبوك</option>
+              <option value="أبها">📍 أبها</option>
+              <option value="القصيم">📍 القصيم</option>
+              <option value="حائل">📍 حائل</option>
+              <option value="جازان">📍 جازان</option>
+              <option value="الأحساء">📍 الأحساء</option>
+              <option value="الجبيل">📍 الجبيل</option>
+              <option value="ينبع">📍 ينبع</option>
+            </select>
+          </div>
+          <div class="w-full sm:w-56">
+            <select
+              id="sortFilter"
+              class="w-full bg-white border border-[#C5A059]/30 rounded-full px-4 py-2.5 text-xs sm:text-sm text-[#2D241E] font-medium focus:outline-none focus:ring-2 focus:ring-[#1A4D2E]/20 cursor-pointer"
+            >
+              <option value="default">✨ الترتيب الافتراضي</option>
+              <option value="newest">🕒 الأحدث إضافة</option>
+              <option value="age-asc">👶 العمر: من الأصغر للأكبر</option>
+              <option value="age-desc">🧕 العمر: من الأكبر للأصغر</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -259,6 +272,7 @@
     let currentStatus = 'الكل';
     let currentCity = 'الكل';
     let currentSearch = '';
+    let currentSort = 'default';
     let visibleCount = 16;
 
     function handleLockerOpen(e) {
@@ -273,7 +287,7 @@
     }
 
     function getFilteredProfiles() {
-      return PROFILES.filter(p => {
+      const filtered = PROFILES.filter(p => {
         const matchesSearch = !currentSearch ||
           p.name.includes(currentSearch) ||
           p.city.includes(currentSearch) ||
@@ -282,6 +296,18 @@
         const matchesCity = currentCity === 'الكل' || p.city === currentCity;
         return matchesSearch && matchesStatus && matchesCity;
       });
+
+      const sorted = [...filtered];
+      if (currentSort === 'newest') {
+        sorted.sort((a, b) => b.id - a.id);
+      } else if (currentSort === 'age-asc') {
+        sorted.sort((a, b) => a.age - b.age);
+      } else if (currentSort === 'age-desc') {
+        sorted.sort((a, b) => b.age - a.age);
+      } else {
+        sorted.sort((a, b) => a.id - b.id);
+      }
+      return sorted;
     }
 
     function renderProfiles() {
@@ -404,12 +430,18 @@
       renderProfiles();
     });
 
+    document.getElementById('sortFilter').addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      visibleCount = 16;
+      renderProfiles();
+    });
+
     document.querySelectorAll('.status-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.status-btn').forEach(b => {
-          b.className = 'status-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 cursor-pointer';
+          b.className = 'status-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white text-[#6B5E4C] border border-[#C5A059]/30 cursor-pointer';
         });
-        btn.className = 'status-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 text-white cursor-pointer';
+        btn.className = 'status-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#1A4D2E] text-white cursor-pointer';
         currentStatus = btn.getAttribute('data-status');
         visibleCount = 16;
         renderProfiles();

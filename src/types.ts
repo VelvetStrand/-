@@ -1,5 +1,7 @@
 export type SocialStatus = 'عزباء' | 'مطلقة' | 'أرملة';
 
+export type SortOption = 'default' | 'newest' | 'age-asc' | 'age-desc';
+
 export interface Profile {
   id: number;
   name: string;
